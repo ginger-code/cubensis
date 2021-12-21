@@ -1,11 +1,16 @@
 use crate::device::GraphicsDevice;
 use crate::gui::{CubensisGuiApp, CubensisGuiRenderer, GuiHost};
-use crate::mesh::mesh_buffers::{MeshBuffers, Vertex};
-use crate::resources::textures::PresentTexture;
+use crate::mesh::buffers::{MeshBuffers, Vertex};
+use crate::presentation::depth_texture::DepthTexture;
 use crate::resources::CubensisResourceCollection;
 use hyphae::scene::geometry::GeometrySource;
 use hyphae::scene::primitives::PrimitiveType::Quad;
 use std::rc::Rc;
+use textures::PresentTexture;
+
+mod depth_texture;
+pub mod presenter;
+mod textures;
 
 pub struct PresentationPass<
     const HISTORY_DEPTH: usize,
@@ -17,7 +22,7 @@ pub struct PresentationPass<
     graphics: Rc<GraphicsDevice>,
     buffers: MeshBuffers,
     pipeline: wgpu::RenderPipeline,
-    // presentation_mesh: Mesh,
+    depth_texture: DepthTexture,
 }
 
 impl<
@@ -41,12 +46,14 @@ impl<
         let render_history = Self::create_textures(&graphics.device, size, format);
         let buffers = MeshBuffers::new(&graphics.device, &GeometrySource::Primitive(Quad));
         let pipeline = Self::create_pipeline(&graphics.device, graphics.get_format());
+        let depth_texture = DepthTexture::new(&graphics.device, size);
 
         Self {
             render_history,
             graphics,
             buffers,
             pipeline,
+            depth_texture,
         }
     }
 
@@ -56,6 +63,10 @@ impl<
 
     pub fn get_bind_group_layout(&self) -> &wgpu::BindGroupLayout {
         &self.render_history[0].bind_group_layout
+    }
+
+    pub fn get_depth_texture_view(&self) -> &wgpu::TextureView {
+        &self.depth_texture.texture_view
     }
 
     pub fn start_frame(&mut self) {
@@ -72,6 +83,7 @@ impl<
         let format = self.graphics.get_format();
         self.pipeline = Self::create_pipeline(&self.graphics.device, self.graphics.get_format());
         self.render_history = Self::create_textures(&self.graphics.device, size, format);
+        self.depth_texture = DepthTexture::new(&self.graphics.device, size);
     }
 
     fn create_pipeline(device: &wgpu::Device, format: wgpu::TextureFormat) -> wgpu::RenderPipeline {
@@ -108,7 +120,7 @@ impl<
         let module = device.create_shader_module(&wgpu::ShaderModuleDescriptor {
             label: Some("Present Shader"),
             source: wgpu::ShaderSource::Wgsl(
-                include_str!("../../shaders/present_shader.wgsl").into(),
+                include_str!("../../../shaders/present_shader.wgsl").into(),
             ),
         });
         device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
@@ -217,69 +229,5 @@ impl<
         }
         log::debug!("Created {} presentation pass textures", res.len());
         res
-    }
-}
-
-pub(crate) trait CubensisPresenter<
-    'a,
-    ResourceCollection,
-    Gui,
-    const HISTORY_DEPTH: usize,
-    const HISTORY_BIND_GROUP: u32,
-    const HISTORY_TEXTURE_BINDING_INDEX: u32,
-    const HISTORY_SAMPLER_BINDING_INDEX: u32,
-> where
-    ResourceCollection: CubensisResourceCollection,
-    Gui: CubensisGuiApp<ResourceCollection>,
-{
-    fn present(
-        self,
-        presentation_pass: &'a mut PresentationPass<
-            HISTORY_DEPTH,
-            HISTORY_BIND_GROUP,
-            HISTORY_TEXTURE_BINDING_INDEX,
-            HISTORY_SAMPLER_BINDING_INDEX,
-        >,
-        gui_host: &'a mut GuiHost,
-        gui: &Gui,
-        resource_collection: &ResourceCollection,
-    ) -> Result<(), wgpu::SurfaceError>;
-}
-impl<
-        'a,
-        ResourceCollection,
-        Gui,
-        const HISTORY_DEPTH: usize,
-        const HISTORY_BIND_GROUP: u32,
-        const TEXTURE_BINDING_INDEX: u32,
-        const SAMPLER_BINDING_INDEX: u32,
-    >
-    CubensisPresenter<
-        'a,
-        ResourceCollection,
-        Gui,
-        HISTORY_DEPTH,
-        HISTORY_BIND_GROUP,
-        TEXTURE_BINDING_INDEX,
-        SAMPLER_BINDING_INDEX,
-    > for wgpu::CommandEncoder
-where
-    ResourceCollection: CubensisResourceCollection,
-    Gui: CubensisGuiApp<ResourceCollection>,
-{
-    fn present(
-        self,
-        presentation_pass: &'a mut PresentationPass<
-            HISTORY_DEPTH,
-            HISTORY_BIND_GROUP,
-            TEXTURE_BINDING_INDEX,
-            SAMPLER_BINDING_INDEX,
-        >,
-        gui_host: &'a mut GuiHost,
-        gui: &Gui,
-        resource_collection: &ResourceCollection,
-    ) -> Result<(), wgpu::SurfaceError> {
-        log::trace!("Rendering to history and presenting");
-        presentation_pass.present(self, gui_host, gui, resource_collection)
     }
 }

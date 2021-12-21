@@ -137,7 +137,7 @@ fn scaling_function(
     if frequency_magnitude == 0.0 {
         0.0
     } else {
-        libm::log10f(frequency_magnitude) - 6.0
+        libm::log10f(frequency_magnitude) - 5.5
     }
 }
 

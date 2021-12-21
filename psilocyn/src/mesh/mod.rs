@@ -1,7 +1,7 @@
-pub mod mesh_buffers;
+pub mod buffers;
 
 use crate::device::GraphicsDevice;
-use crate::mesh::mesh_buffers::{MeshBuffers, Vertex};
+use crate::mesh::buffers::{MeshBuffers, Vertex};
 use crate::resources::CubensisResourceCollection;
 use crate::validation::CubensisValidatedShader;
 use hyphae::scene::geometry::MeshDescriptor;
@@ -148,7 +148,13 @@ impl Mesh {
                     clamp_depth: false,
                     conservative: false,
                 },
-                depth_stencil: None,
+                depth_stencil: Some(wgpu::DepthStencilState {
+                    format: crate::DEPTH_BUFFER_FORMAT,
+                    depth_write_enabled: true,
+                    depth_compare: wgpu::CompareFunction::Less,
+                    stencil: wgpu::StencilState::default(),
+                    bias: wgpu::DepthBiasState::default(),
+                }),
                 multisample: wgpu::MultisampleState {
                     count: 1,
                     mask: !0,

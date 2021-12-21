@@ -1,7 +1,8 @@
 use crate::device::GraphicsDevice;
 use crate::gui::{CubensisGuiApp, GuiHost};
 use crate::mesh::{CubensisMeshRenderPass, Mesh};
-use crate::presentation::{CubensisPresenter, PresentationPass};
+use crate::presentation::presenter::CubensisPresenter;
+use crate::presentation::PresentationPass;
 use crate::resources::{CubensisMeshSpawner, CubensisResourceCollection};
 use crate::window::CubensisWindowBuilder;
 use hyphae::configuration::library::Library;
@@ -224,6 +225,7 @@ impl<
         log::trace!("Rendering");
         self.presentation_pass.start_frame();
         let view = self.presentation_pass.create_presentation_view();
+        let depth_buffer = self.presentation_pass.get_depth_texture_view();
         let history_bind_group = self.presentation_pass.get_current_bind_group();
         let mut encoder =
             self.graphics
@@ -252,7 +254,14 @@ impl<
                         store: true,
                     },
                 }],
-                depth_stencil_attachment: None,
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: depth_buffer,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(1.0),
+                        store: true,
+                    }),
+                    stencil_ops: None,
+                }),
             });
             renderpass.draw_mesh_indexed::<HISTORY_BIND_GROUP_INDEX>(
                 mesh,

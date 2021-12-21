@@ -3,15 +3,10 @@ use crate::mesh::Mesh;
 use hyphae::configuration::library::LibraryConfiguration;
 use hyphae::configuration::Configuration;
 use hyphae::events::CubensisEvent;
-use hyphae::scene::shaders::RenderShader;
 use hyphae::scene::Scene;
-use itertools::Itertools;
-use path_clean::PathClean;
 use std::path::PathBuf;
 use std::rc::Rc;
 use wgpu::BindGroupLayout;
-
-pub mod textures;
 
 pub trait CubensisResource<
     const BIND_GROUP: u32,

@@ -28,7 +28,6 @@ Soon planned features:
 - UI components for easing shader development
   - customized calculators, uniform variable views, CPU shader debugging
 - cameras
-- depth buffering
 - better composite rendering support
 - implementation of compute shaders for vertice generation/manipulation
 - implementation of resource group compute shaders
