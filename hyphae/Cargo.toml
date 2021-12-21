@@ -1,0 +1,21 @@
+[package]
+name = "hyphae"
+version = "0.1.0"
+edition = "2021"
+description = "Shared functionality and communication module"
+
+[lib]
+name = "hyphae"
+path = "src/lib.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.72"
+anyhow = "1.0.51"
+dirs = "4.0.0"
+winit = "0.25.0"
+log = "0.4"
+walkdir = "2.3.2"
+itertools = "0.10.1"

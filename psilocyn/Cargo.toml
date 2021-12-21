@@ -1,0 +1,27 @@
+[package]
+name = "psilocyn"
+version = "0.1.0"
+edition = "2021"
+description = "Core graphics and app lifecycle functionality"
+
+[lib]
+name = "psilocyn"
+path = "src/lib.rs"
+
+[dependencies]
+wgpu = { version = "0.11.1", features = ["spirv"] }
+winit = "0.25.0"
+pollster = "0.2.4"
+hyphae = { path = "../hyphae" }
+image = "0.23.14"
+anyhow = "1.0.51"
+array-init = "2.0.0"
+bytemuck = { version = "1.7.2", features = ["derive"] }
+epi = "0.15.0"
+egui_wgpu_backend = "0.14.0"
+egui = "0.15.0"
+egui_winit_platform = "0.11.0"
+log = "0.4"
+itertools = "0.10.1"
+naga = "0.7.3"
+path-clean = "0.1.0"

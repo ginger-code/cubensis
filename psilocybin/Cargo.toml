@@ -1,0 +1,21 @@
+[package]
+name = "psilocybin"
+version = "0.1.0"
+edition = "2021"
+description = "Extensions to Psilocyn such as resources and UI"
+
+[lib]
+path = "src/lib.rs"
+name = "psilocybin"
+
+[dependencies]
+hyphae = { path = "../hyphae" }
+psilocyn = { path = "../psilocyn" }
+substrate = { path = "../substrate" }
+wgpu = "0.11.1"
+bytemuck = { version = "1.7.2", features = ["derive"] }
+anyhow = "1.0.51"
+egui = "0.15.0"
+epi = "0.15.0"
+winit = "0.25.0"
+log = "0.4"

@@ -1,0 +1,24 @@
+[package]
+name = "cubensis"
+version = "0.0.1"
+edition = "2021"
+description = "Cubensis is a real-time 3D audio visualizer and shader development tool"
+
+[workspace]
+members = [
+    "psilocyn",
+    "hyphae",
+    "psilocybin",
+    "substrate",
+    "spore"
+]
+
+[dependencies]
+anyhow = "1.0.51"
+winit = "0.25"
+env_logger = "0.9"
+log = "0.4"
+hyphae = { path = "./hyphae" }
+psilocyn = { path = "./psilocyn" }
+psilocybin = { path = "./psilocybin" }
+spore = { path = "./spore" }
