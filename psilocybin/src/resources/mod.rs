@@ -13,15 +13,20 @@ pub struct ResourceCollection {
     graphics: Rc<GraphicsDevice>,
     bind_group_layout: wgpu::BindGroupLayout,
     bind_group: wgpu::BindGroup,
-    pub time: TimeResource<0, 0>,
-    pub audio: AudioResource<0, 1>,
+    pub time: TimeResource,
+    pub audio: AudioResource,
 }
 
 impl CubensisResourceCollection for ResourceCollection {
     fn new(graphics: Rc<GraphicsDevice>, configuration: Configuration) -> Self {
         log::debug!("Creating resource collection");
-        let time = TimeResource::new(graphics.clone());
-        let audio = AudioResource::new(graphics.clone(), configuration);
+        let time = TimeResource::new(graphics.clone(), 0, 0);
+        let audio = AudioResource::new(
+            graphics.clone(),
+            configuration,
+            0,
+            time.next_binding_offset_in_group(),
+        );
         let bind_group_layout_entries: Vec<wgpu::BindGroupLayoutEntry> = vec![
             time.get_bind_group_layout_entries(),
             audio.get_bind_group_layout_entries(),

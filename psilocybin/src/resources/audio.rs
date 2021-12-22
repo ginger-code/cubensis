@@ -6,8 +6,10 @@ use std::time::Duration;
 use substrate::wave_stream::WaveStream;
 use substrate::AudioStreamSource;
 
-pub struct AudioResource<const BIND_GROUP: u32, const BIND_OFFSET: u32> {
+pub struct AudioResource {
     graphics: std::rc::Rc<GraphicsDevice>,
+    binding_group: u32,
+    binding_offset: u32,
     wave_stream: WaveStream,
     wave_texture_width: u32,
     spectrum_texture_width: u32,
@@ -18,8 +20,13 @@ pub struct AudioResource<const BIND_GROUP: u32, const BIND_OFFSET: u32> {
     sampler: wgpu::Sampler,
 }
 
-impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> AudioResource<BIND_GROUP, BIND_OFFSET> {
-    pub fn new(graphics: std::rc::Rc<GraphicsDevice>, configuration: Configuration) -> Self {
+impl AudioResource {
+    pub fn new(
+        graphics: std::rc::Rc<GraphicsDevice>,
+        configuration: Configuration,
+        binding_group: u32,
+        binding_offset: u32,
+    ) -> Self {
         log::debug!("Creating audio buffer resource");
         let stream_source = AudioStreamSource::default_stream();
         let mut wave_stream = WaveStream::new(stream_source, configuration.clone());
@@ -50,6 +57,8 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> AudioResource<BIND_GROUP, BI
             wave_view,
             spectrum_view,
             sampler,
+            binding_group,
+            binding_offset,
         }
     }
     fn create_1d_texture(
@@ -75,26 +84,21 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> AudioResource<BIND_GROUP, BI
     }
 }
 
-impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP, BIND_OFFSET, 3>
-    for AudioResource<BIND_GROUP, BIND_OFFSET>
-{
+impl CubensisResource for AudioResource {
     fn update(&mut self, _: Duration) -> bool {
         log::trace!("Updating audio buffer resource");
         let mut should_rebuild_bind_group = false;
         let (wave_data, spectrum_data) = self.wave_stream.get_wave_and_spectrum_data();
         if wave_data.len() as u32 != self.wave_texture_width {
-            self.wave_texture = AudioResource::<BIND_GROUP, BIND_OFFSET>::create_1d_texture(
-                &self.graphics,
-                wave_data,
-                "Wave Data Texture",
-            );
+            self.wave_texture =
+                AudioResource::create_1d_texture(&self.graphics, wave_data, "Wave Data Texture");
             self.wave_view = self
                 .wave_texture
                 .create_view(&wgpu::TextureViewDescriptor::default());
             should_rebuild_bind_group = true;
         }
         if spectrum_data.len() as u32 != self.spectrum_texture_width {
-            self.spectrum_texture = AudioResource::<BIND_GROUP, BIND_OFFSET>::create_1d_texture(
+            self.spectrum_texture = AudioResource::create_1d_texture(
                 &self.graphics,
                 spectrum_data,
                 "Spectrum Data Texture",
@@ -145,7 +149,7 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
         log::trace!("Retrieving audio buffer resource bind group layout entries");
         vec![
             wgpu::BindGroupLayoutEntry {
-                binding: BIND_OFFSET,
+                binding: self.binding_offset,
                 visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
                 ty: wgpu::BindingType::Texture {
                     multisampled: false,
@@ -155,7 +159,7 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
                 count: None,
             },
             wgpu::BindGroupLayoutEntry {
-                binding: BIND_OFFSET + 1,
+                binding: self.binding_offset + 1,
                 visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
                 ty: wgpu::BindingType::Texture {
                     multisampled: false,
@@ -165,7 +169,7 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
                 count: None,
             },
             wgpu::BindGroupLayoutEntry {
-                binding: BIND_OFFSET + 2,
+                binding: self.binding_offset + 2,
                 visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
                 ty: wgpu::BindingType::Sampler {
                     comparison: false,
@@ -180,15 +184,15 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
         log::trace!("Retrieving audio buffer resource bind group entries");
         vec![
             wgpu::BindGroupEntry {
-                binding: BIND_OFFSET,
+                binding: self.binding_offset,
                 resource: wgpu::BindingResource::TextureView(&self.wave_view),
             },
             wgpu::BindGroupEntry {
-                binding: BIND_OFFSET + 1,
+                binding: self.binding_offset + 1,
                 resource: wgpu::BindingResource::TextureView(&self.spectrum_view),
             },
             wgpu::BindGroupEntry {
-                binding: BIND_OFFSET + 2,
+                binding: self.binding_offset + 2,
                 resource: wgpu::BindingResource::Sampler(&self.sampler),
             },
         ]
@@ -197,5 +201,16 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
     fn handle_or_capture_event(&mut self, _event: &winit::event::Event<'_, CubensisEvent>) -> bool {
         log::trace!("Handling event in audio buffer resource");
         false
+    }
+
+    fn binding_group(&self) -> u32 {
+        self.binding_group
+    }
+    fn binding_offset(&self) -> u32 {
+        self.binding_offset
+    }
+
+    fn binding_size() -> u32 {
+        3
     }
 }
