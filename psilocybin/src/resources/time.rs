@@ -80,7 +80,7 @@ impl CubensisResource for TimeResource {
         log::trace!("Resizing time resource");
     }
     fn get_bind_group_layout_entries(&self) -> Vec<wgpu::BindGroupLayoutEntry> {
-        log::trace!("Retrieving audio buffer resource bind group layout entries");
+        log::trace!("Retrieving time resource bind group layout entries");
         vec![wgpu::BindGroupLayoutEntry {
             binding: self.binding_offset,
             visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
@@ -93,7 +93,7 @@ impl CubensisResource for TimeResource {
         }]
     }
     fn get_bind_group_entries(&self) -> Vec<wgpu::BindGroupEntry> {
-        log::trace!("Retrieving audio buffer resource bind group entries");
+        log::trace!("Retrieving time resource bind group entries");
         vec![wgpu::BindGroupEntry {
             binding: self.binding_offset,
             resource: self.time_buffer.as_entire_binding(),

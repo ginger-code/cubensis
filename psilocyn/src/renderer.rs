@@ -15,8 +15,6 @@ use winit::event::{Event, WindowEvent};
 use winit::event_loop::ControlFlow;
 use winit::window::WindowId;
 
-const HISTORY_BIND_GROUP_INDEX: u32 = 1;
-
 pub struct Renderer<
     ResourceCollection: 'static + CubensisResourceCollection,
     Gui: 'static + CubensisGuiApp<ResourceCollection>,
@@ -27,7 +25,7 @@ pub struct Renderer<
     graphics: Rc<GraphicsDevice>,
     resource_collection: ResourceCollection,
     gui_host: GuiHost,
-    presentation_pass: PresentationPass<HISTORY_DEPTH, HISTORY_BIND_GROUP_INDEX, 0, 1>,
+    presentation_pass: PresentationPass<HISTORY_DEPTH>,
     meshes: Vec<Mesh>,
     gui: Gui,
     _scene: Scene,
@@ -263,11 +261,7 @@ impl<
                     stencil_ops: None,
                 }),
             });
-            renderpass.draw_mesh_indexed::<HISTORY_BIND_GROUP_INDEX>(
-                mesh,
-                bind_groups.as_slice(),
-                history_bind_group,
-            );
+            renderpass.draw_mesh_indexed(mesh, bind_groups.as_slice(), history_bind_group);
         }
         encoder.present(
             &mut self.presentation_pass,

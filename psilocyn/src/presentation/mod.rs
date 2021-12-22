@@ -12,12 +12,7 @@ mod depth_texture;
 pub mod presenter;
 mod textures;
 
-pub struct PresentationPass<
-    const HISTORY_DEPTH: usize,
-    const HISTORY_BIND_GROUP: u32,
-    const HISTORY_TEXTURE_BINDING_INDEX: u32,
-    const HISTORY_SAMPLER_BINDING_INDEX: u32,
-> {
+pub struct PresentationPass<const HISTORY_DEPTH: usize> {
     render_history: Vec<PresentTexture>,
     graphics: Rc<GraphicsDevice>,
     buffers: MeshBuffers,
@@ -25,19 +20,7 @@ pub struct PresentationPass<
     depth_texture: DepthTexture,
 }
 
-impl<
-        const HISTORY_DEPTH: usize,
-        const HISTORY_BIND_GROUP: u32,
-        const HISTORY_TEXTURE_BINDING_INDEX: u32,
-        const HISTORY_SAMPLER_BINDING_INDEX: u32,
-    >
-    PresentationPass<
-        HISTORY_DEPTH,
-        HISTORY_BIND_GROUP,
-        HISTORY_TEXTURE_BINDING_INDEX,
-        HISTORY_SAMPLER_BINDING_INDEX,
-    >
-{
+impl<const HISTORY_DEPTH: usize> PresentationPass<HISTORY_DEPTH> {
     pub fn new(graphics: Rc<GraphicsDevice>) -> Self {
         log::debug!("Creating presentation pass");
         let size = graphics.create_extent3d(1);

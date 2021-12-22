@@ -1,6 +1,6 @@
 [package]
 name = "psilocyn"
-version = "0.1.0"
+version = "0.1.0-alpha"
 edition = "2021"
 description = "Core graphics and app lifecycle functionality"
 
@@ -24,4 +24,4 @@ egui_winit_platform = "0.11.0"
 log = "0.4"
 itertools = "0.10.1"
 naga = "0.7.3"
-path-clean = "0.1.0"
+path-clean = "0.1.0-alpha"

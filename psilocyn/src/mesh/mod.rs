@@ -187,14 +187,14 @@ impl Mesh {
 }
 
 pub trait CubensisMeshRenderPass<'a> {
-    fn draw_mesh_indexed<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indexed(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],
         history_bind_group: &'a BindGroup,
     );
 
-    fn draw_mesh_indirect<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indirect(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],
@@ -203,7 +203,7 @@ pub trait CubensisMeshRenderPass<'a> {
 }
 
 impl<'a> CubensisMeshRenderPass<'a> for wgpu::RenderPass<'a> {
-    fn draw_mesh_indexed<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indexed(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],
@@ -228,7 +228,7 @@ impl<'a> CubensisMeshRenderPass<'a> for wgpu::RenderPass<'a> {
         }
     }
 
-    fn draw_mesh_indirect<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indirect(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],

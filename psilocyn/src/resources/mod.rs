@@ -18,7 +18,7 @@ pub trait CubensisResource {
     fn binding_group(&self) -> u32;
     fn binding_offset(&self) -> u32;
     fn next_binding_offset_in_group(&self) -> u32 {
-        self.binding_group() + Self::binding_size()
+        self.binding_offset() + Self::binding_size()
     }
     fn binding_size() -> u32;
 }

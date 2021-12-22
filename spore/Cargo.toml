@@ -1,6 +1,6 @@
 [package]
 name = "spore"
-version = "0.1.0"
+version = "0.1.0-alpha"
 edition = "2021"
 description = "Interprocess communication and filesystem services"
 

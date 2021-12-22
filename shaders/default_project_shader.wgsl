@@ -15,20 +15,34 @@ struct TimeInfo {
     frame_time_seconds: f32;
 };
 
+[[block]]
+struct Camera{
+    translation: mat4x4<f32>;
+    center_translation: mat4x4<f32>;
+    rotation: vec4<f32>;
+    camera: mat4x4<f32>;
+    inv_camera: mat4x4<f32>;
+    zoom_speed: f32;
+    inv_screen: vec2<f32>;
+    perspective_projection: mat4x4<f32>;
+    projection: mat4x4<f32>;
+};
+
 [[group(0), binding(0)]]
 var<uniform> time_info: TimeInfo;
 [[group(0), binding(1)]]
-var wave_texture: texture_1d<f32>;
+var<uniform> camera: Camera;
 [[group(0), binding(2)]]
-var spectrum_texture: texture_1d<f32>;
+var wave_texture: texture_1d<f32>;
 [[group(0), binding(3)]]
+var spectrum_texture: texture_1d<f32>;
+[[group(0), binding(4)]]
 var audio_sampler : sampler;
+// Render History
 [[group(1), binding(0)]]
 var history_texture: texture_2d<f32>;
 [[group(1), binding(1)]]
 var history_sampler : sampler;
-
-
 
 [[stage(vertex)]]
 fn main(
