@@ -3,8 +3,10 @@ use psilocyn::device::GraphicsDevice;
 use psilocyn::resources::CubensisResource;
 use wgpu::util::DeviceExt;
 
-pub struct TimeResource<const BIND_GROUP: u32, const BIND_OFFSET: u32> {
+pub struct TimeResource {
     graphics: std::rc::Rc<GraphicsDevice>,
+    binding_group: u32,
+    binding_offset: u32,
     program_start_time: std::time::Instant,
     frame_count: u32,
     time_buffer_data: TimeBufferData,
@@ -12,8 +14,12 @@ pub struct TimeResource<const BIND_GROUP: u32, const BIND_OFFSET: u32> {
     average_fps: f32,
 }
 
-impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> TimeResource<BIND_GROUP, BIND_OFFSET> {
-    pub fn new(graphics: std::rc::Rc<GraphicsDevice>) -> Self {
+impl TimeResource {
+    pub fn new(
+        graphics: std::rc::Rc<GraphicsDevice>,
+        binding_group: u32,
+        binding_offset: u32,
+    ) -> Self {
         log::trace!("Creating time resource");
         let program_start_time = std::time::Instant::now();
         let frame_count = 0 as u32;
@@ -33,6 +39,8 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> TimeResource<BIND_GROUP, BIN
             time_buffer_data,
             time_buffer,
             average_fps,
+            binding_group,
+            binding_offset,
         }
     }
 
@@ -54,9 +62,7 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> TimeResource<BIND_GROUP, BIN
     }
 }
 
-impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP, BIND_OFFSET, 1>
-    for TimeResource<BIND_GROUP, BIND_OFFSET>
-{
+impl CubensisResource for TimeResource {
     fn update(&mut self, time_delta: std::time::Duration) -> bool {
         log::trace!("Updating time resource");
         self.frame_count += 1;
@@ -74,9 +80,9 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
         log::trace!("Resizing time resource");
     }
     fn get_bind_group_layout_entries(&self) -> Vec<wgpu::BindGroupLayoutEntry> {
-        log::trace!("Retrieving audio buffer resource bind group layout entries");
+        log::trace!("Retrieving time resource bind group layout entries");
         vec![wgpu::BindGroupLayoutEntry {
-            binding: BIND_OFFSET,
+            binding: self.binding_offset,
             visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
             ty: wgpu::BindingType::Buffer {
                 ty: wgpu::BufferBindingType::Uniform,
@@ -87,9 +93,9 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
         }]
     }
     fn get_bind_group_entries(&self) -> Vec<wgpu::BindGroupEntry> {
-        log::trace!("Retrieving audio buffer resource bind group entries");
+        log::trace!("Retrieving time resource bind group entries");
         vec![wgpu::BindGroupEntry {
-            binding: BIND_OFFSET,
+            binding: self.binding_offset,
             resource: self.time_buffer.as_entire_binding(),
         }]
     }
@@ -97,6 +103,18 @@ impl<const BIND_GROUP: u32, const BIND_OFFSET: u32> CubensisResource<BIND_GROUP,
     fn handle_or_capture_event(&mut self, _event: &winit::event::Event<'_, CubensisEvent>) -> bool {
         log::trace!("Handling event in time resource");
         false
+    }
+
+    fn binding_group(&self) -> u32 {
+        self.binding_group
+    }
+
+    fn binding_offset(&self) -> u32 {
+        self.binding_offset
+    }
+
+    fn binding_size() -> u32 {
+        1
     }
 }
 

@@ -1,7 +1,7 @@
-pub mod mesh_buffers;
+pub mod buffers;
 
 use crate::device::GraphicsDevice;
-use crate::mesh::mesh_buffers::{MeshBuffers, Vertex};
+use crate::mesh::buffers::{MeshBuffers, Vertex};
 use crate::resources::CubensisResourceCollection;
 use crate::validation::CubensisValidatedShader;
 use hyphae::scene::geometry::MeshDescriptor;
@@ -148,7 +148,13 @@ impl Mesh {
                     clamp_depth: false,
                     conservative: false,
                 },
-                depth_stencil: None,
+                depth_stencil: Some(wgpu::DepthStencilState {
+                    format: crate::DEPTH_BUFFER_FORMAT,
+                    depth_write_enabled: true,
+                    depth_compare: wgpu::CompareFunction::Less,
+                    stencil: wgpu::StencilState::default(),
+                    bias: wgpu::DepthBiasState::default(),
+                }),
                 multisample: wgpu::MultisampleState {
                     count: 1,
                     mask: !0,
@@ -181,14 +187,14 @@ impl Mesh {
 }
 
 pub trait CubensisMeshRenderPass<'a> {
-    fn draw_mesh_indexed<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indexed(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],
         history_bind_group: &'a BindGroup,
     );
 
-    fn draw_mesh_indirect<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indirect(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],
@@ -197,7 +203,7 @@ pub trait CubensisMeshRenderPass<'a> {
 }
 
 impl<'a> CubensisMeshRenderPass<'a> for wgpu::RenderPass<'a> {
-    fn draw_mesh_indexed<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indexed(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],
@@ -222,7 +228,7 @@ impl<'a> CubensisMeshRenderPass<'a> for wgpu::RenderPass<'a> {
         }
     }
 
-    fn draw_mesh_indirect<const HISTORY_BIND_GROUP_INDEX: u32>(
+    fn draw_mesh_indirect(
         &mut self,
         mesh: &'a Mesh,
         bind_groups: &'a [&wgpu::BindGroup],

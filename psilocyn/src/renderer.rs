@@ -1,7 +1,8 @@
 use crate::device::GraphicsDevice;
 use crate::gui::{CubensisGuiApp, GuiHost};
 use crate::mesh::{CubensisMeshRenderPass, Mesh};
-use crate::presentation::{CubensisPresenter, PresentationPass};
+use crate::presentation::presenter::CubensisPresenter;
+use crate::presentation::PresentationPass;
 use crate::resources::{CubensisMeshSpawner, CubensisResourceCollection};
 use crate::window::CubensisWindowBuilder;
 use hyphae::configuration::library::Library;
@@ -14,8 +15,6 @@ use winit::event::{Event, WindowEvent};
 use winit::event_loop::ControlFlow;
 use winit::window::WindowId;
 
-const HISTORY_BIND_GROUP_INDEX: u32 = 1;
-
 pub struct Renderer<
     ResourceCollection: 'static + CubensisResourceCollection,
     Gui: 'static + CubensisGuiApp<ResourceCollection>,
@@ -26,7 +25,7 @@ pub struct Renderer<
     graphics: Rc<GraphicsDevice>,
     resource_collection: ResourceCollection,
     gui_host: GuiHost,
-    presentation_pass: PresentationPass<HISTORY_DEPTH, HISTORY_BIND_GROUP_INDEX, 0, 1>,
+    presentation_pass: PresentationPass<HISTORY_DEPTH>,
     meshes: Vec<Mesh>,
     gui: Gui,
     _scene: Scene,
@@ -224,6 +223,7 @@ impl<
         log::trace!("Rendering");
         self.presentation_pass.start_frame();
         let view = self.presentation_pass.create_presentation_view();
+        let depth_buffer = self.presentation_pass.get_depth_texture_view();
         let history_bind_group = self.presentation_pass.get_current_bind_group();
         let mut encoder =
             self.graphics
@@ -252,13 +252,16 @@ impl<
                         store: true,
                     },
                 }],
-                depth_stencil_attachment: None,
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: depth_buffer,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(1.0),
+                        store: true,
+                    }),
+                    stencil_ops: None,
+                }),
             });
-            renderpass.draw_mesh_indexed::<HISTORY_BIND_GROUP_INDEX>(
-                mesh,
-                bind_groups.as_slice(),
-                history_bind_group,
-            );
+            renderpass.draw_mesh_indexed(mesh, bind_groups.as_slice(), history_bind_group);
         }
         encoder.present(
             &mut self.presentation_pass,

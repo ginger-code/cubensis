@@ -3,28 +3,24 @@ use crate::mesh::Mesh;
 use hyphae::configuration::library::LibraryConfiguration;
 use hyphae::configuration::Configuration;
 use hyphae::events::CubensisEvent;
-use hyphae::scene::shaders::RenderShader;
 use hyphae::scene::Scene;
-use itertools::Itertools;
-use path_clean::PathClean;
 use std::path::PathBuf;
 use std::rc::Rc;
 use wgpu::BindGroupLayout;
 
-pub mod textures;
-
-pub trait CubensisResource<
-    const BIND_GROUP: u32,
-    const BIND_OFFSET: u32,
-    const BIND_ENTRY_COUNT: usize,
->
-{
+pub trait CubensisResource {
     ///returns true if bind group should be recreated
     fn update(&mut self, time_delta: std::time::Duration) -> bool;
     fn resize(&mut self);
     fn get_bind_group_layout_entries(&self) -> Vec<wgpu::BindGroupLayoutEntry>;
     fn get_bind_group_entries(&self) -> Vec<wgpu::BindGroupEntry>;
     fn handle_or_capture_event(&mut self, event: &winit::event::Event<'_, CubensisEvent>) -> bool;
+    fn binding_group(&self) -> u32;
+    fn binding_offset(&self) -> u32;
+    fn next_binding_offset_in_group(&self) -> u32 {
+        self.binding_offset() + Self::binding_size()
+    }
+    fn binding_size() -> u32;
 }
 
 pub trait CubensisResourceCollection {

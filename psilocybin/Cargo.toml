@@ -1,6 +1,6 @@
 [package]
 name = "psilocybin"
-version = "0.1.0"
+version = "0.1.0-alpha"
 edition = "2021"
 description = "Extensions to Psilocyn such as resources and UI"
 
@@ -19,3 +19,4 @@ egui = "0.15.0"
 epi = "0.15.0"
 winit = "0.25.0"
 log = "0.4"
+cgmath = "0.18.0"
