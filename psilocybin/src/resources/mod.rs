@@ -116,13 +116,9 @@ impl CubensisResourceCollection for ResourceCollection {
 
     fn handle_event(&mut self, event: &winit::event::Event<'_, CubensisEvent>) {
         log::trace!("Handling event in resource collection");
-        match self.audio.handle_or_capture_event(event) || self.time.handle_or_capture_event(event)
-        {
-            true => {
-                log::debug!("Resource collection consumed an event: {:?}", event)
-            }
-            false => {}
-        }
+        self.audio.handle_or_capture_event(event);
+        self.time.handle_or_capture_event(event);
+        self.camera.handle_or_capture_event(event);
     }
 }
 
