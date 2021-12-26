@@ -7,11 +7,11 @@ use hyphae::events::CubensisEvent;
 use std::time::Duration;
 use winit::event::Event;
 
-pub struct MainMenu {
+pub struct MainMenuAndWidgets {
     pub(crate) audio_widget_enabled: bool,
 }
 
-impl MainMenu {
+impl MainMenuAndWidgets {
     pub fn new() -> Self {
         Self {
             audio_widget_enabled: false,
@@ -32,7 +32,7 @@ impl MainMenu {
     }
 }
 
-impl CubensisGuiComponent for MainMenu {
+impl CubensisGuiComponent for MainMenuAndWidgets {
     fn update(&mut self, _: Duration) {}
 
     fn draw(&mut self, context: &CtxRef, _: &Frame, resource_collection: &ResourceCollection) {

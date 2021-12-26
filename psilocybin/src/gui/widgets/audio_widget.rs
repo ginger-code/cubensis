@@ -1,10 +1,10 @@
-use crate::gui::main_menu::MainMenu;
+use crate::gui::components::menu::MainMenuAndWidgets;
 use crate::gui::CubensisGuiWidget;
 use crate::ResourceCollection;
 
 pub struct AudioWidget;
 
-impl CubensisGuiWidget<AudioWidget> for MainMenu {
+impl CubensisGuiWidget<AudioWidget> for MainMenuAndWidgets {
     fn draw(&self, context: &egui::CtxRef, resource_collection: &ResourceCollection) {
         if !self.audio_widget_enabled {
             return;
