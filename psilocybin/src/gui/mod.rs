@@ -1,12 +1,13 @@
+use crate::gui::main_menu::MainMenu;
 use crate::gui::status_bar::StatusBar;
-use crate::gui::top_menu::TopMenu;
 use crate::resources::ResourceCollection;
 use hyphae::events::CubensisEvent;
 use psilocyn::gui::CubensisGuiApp;
 use winit::event::Event;
 
+mod main_menu;
 mod status_bar;
-mod top_menu;
+mod widgets;
 
 type GuiComponent = Box<dyn CubensisGuiComponent>;
 
@@ -21,7 +22,7 @@ impl CubensisGuiApp<ResourceCollection> for GuiApp {
     fn new() -> Self {
         let is_hidden = false;
         let components: Vec<GuiComponent> =
-            vec![Box::new(TopMenu::new()), Box::new(StatusBar::new())];
+            vec![Box::new(MainMenu::new()), Box::new(StatusBar::new())];
         Self {
             is_hidden,
             components,
@@ -35,7 +36,7 @@ impl CubensisGuiApp<ResourceCollection> for GuiApp {
         }
     }
     fn draw(
-        &self,
+        &mut self,
         context: &egui::CtxRef,
         frame: &epi::Frame,
         resource_collection: &ResourceCollection,
@@ -44,7 +45,7 @@ impl CubensisGuiApp<ResourceCollection> for GuiApp {
         if self.is_hidden {
             return;
         }
-        for component in &self.components {
+        for component in &mut self.components {
             component.draw(context, frame, resource_collection);
         }
     }
@@ -79,10 +80,25 @@ impl CubensisGuiApp<ResourceCollection> for GuiApp {
 trait CubensisGuiComponent {
     fn update(&mut self, time_delta: std::time::Duration);
     fn draw(
-        &self,
+        &mut self,
         context: &egui::CtxRef,
         frame: &epi::Frame,
         resource_collection: &ResourceCollection,
     );
     fn handle_event(&mut self, event: &winit::event::Event<CubensisEvent>);
+}
+
+trait CubensisGuiWidget<T> {
+    fn draw(
+        &self,
+        context: &egui::CtxRef,
+        resource_collection: &ResourceCollection,
+    );
+    fn draw_menu_option(&mut self, ui: &mut egui::Ui) {
+        let title = self.menu_title();
+        ui.checkbox(self.toggle(), title);
+    }
+    fn menu_title(&self) -> String;
+    fn toggle(&mut self) -> &mut bool;
+    fn is_enabled(&self) -> bool;
 }

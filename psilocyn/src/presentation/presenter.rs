@@ -11,7 +11,7 @@ where
         self,
         presentation_pass: &'a mut PresentationPass<HISTORY_DEPTH>,
         gui_host: &'a mut GuiHost,
-        gui: &Gui,
+        gui: &mut Gui,
         resource_collection: &ResourceCollection,
     ) -> Result<(), wgpu::SurfaceError>;
 }
@@ -25,7 +25,7 @@ where
         self,
         presentation_pass: &'a mut PresentationPass<HISTORY_DEPTH>,
         gui_host: &'a mut GuiHost,
-        gui: &Gui,
+        gui: &mut Gui,
         resource_collection: &ResourceCollection,
     ) -> Result<(), wgpu::SurfaceError> {
         log::trace!("Rendering to history and presenting");

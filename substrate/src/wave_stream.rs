@@ -1,3 +1,4 @@
+use crate::stream_info::AudioStreamInfo;
 use crate::AudioStreamSource;
 use cpal::traits::{DeviceTrait, StreamTrait};
 use hyphae::configuration::Configuration;
@@ -70,6 +71,10 @@ impl WaveStream {
             frequency_data_receiver,
             audio_stream_created: std::time::Instant::now(),
         }
+    }
+
+    pub fn get_stream_info(&self) -> AudioStreamInfo {
+        AudioStreamInfo::new(self.audio_device.name().unwrap_or_default())
     }
 
     pub fn get_wave_and_spectrum_data(&mut self) -> (&Vec<f32>, &Vec<f32>) {

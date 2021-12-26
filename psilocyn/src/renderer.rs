@@ -88,10 +88,15 @@ impl<
         log::debug!("Running renderer");
         let event_loop: winit::event_loop::EventLoop<CubensisEvent> =
             winit::event_loop::EventLoop::with_user_event();
+        log::debug!("Creating window");
         let window = Rc::new(event_loop.create_window());
+        log::debug!("Creating event proxy");
         let proxy = event_loop.create_proxy();
+        log::debug!("Initializing renderer");
         let mut renderer = Self::new(window.clone(), proxy.clone(), configuration.clone());
+        log::debug!("Beginning plugins");
         renderer.plugins.start_all();
+        log::debug!("Entering event loop");
         event_loop.run(move |event, _window_target, control_flow| {
             log::trace!("Rendering frame");
             renderer.handle_event(&event, control_flow).unwrap();
@@ -266,7 +271,7 @@ impl<
         encoder.present(
             &mut self.presentation_pass,
             &mut self.gui_host,
-            &self.gui,
+            &mut self.gui,
             &self.resource_collection,
         )?;
         Ok(())

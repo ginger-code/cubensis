@@ -79,7 +79,7 @@ where
     fn render_gui(
         &mut self,
         gui_host: &mut GuiHost,
-        app: &Gui,
+        app: &mut Gui,
         resource_collection: &ResourceCollection,
         render_target: &wgpu::TextureView,
     );
@@ -93,7 +93,7 @@ where
     fn render_gui(
         &mut self,
         gui_host: &mut GuiHost,
-        app: &Gui,
+        app: &mut Gui,
         resource_collection: &ResourceCollection,
         render_target: &wgpu::TextureView,
     ) {
@@ -156,7 +156,7 @@ where
     fn new() -> Self;
     fn update(&mut self, time_delta: std::time::Duration);
     fn draw(
-        &self,
+        &mut self,
         context: &egui::CtxRef,
         frame: &epi::Frame,
         resource_collection: &ResourceCollection,

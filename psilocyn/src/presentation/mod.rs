@@ -147,7 +147,7 @@ impl<const HISTORY_DEPTH: usize> PresentationPass<HISTORY_DEPTH> {
         &mut self,
         mut encoder: wgpu::CommandEncoder,
         gui_host: &mut GuiHost,
-        gui: &Gui,
+        gui: &mut Gui,
         resource_collection: &ResourceCollection,
     ) -> Result<(), wgpu::SurfaceError> {
         log::trace!("Presenting image");

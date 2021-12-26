@@ -13,7 +13,7 @@ Current features:
   - const generics control the number of history layers to preserve
 - A rudimentary scene and mesh definition system (in development)
 - Shader/scene hot-reload with script validation
-  - selective render pipeline regeneration to prevent unneccessary work on the GPU
+  - selective render pipeline regeneration to prevent unnecessary work on the GPU
 - A toggleable UI for statistics
 - Single-threaded, interactive websocket RPC interface
 - (broken) VS Code extension for controlling playback and configuring development features
