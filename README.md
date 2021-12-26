@@ -18,6 +18,8 @@ Current features:
 - Single-threaded, interactive websocket RPC interface
 - (broken) VS Code extension for controlling playback and configuring development features
 - A concurrent plugin system (i.e. RPC, file watchers, etc.)
+- Up to 5 unique sampled texture imports per scene
+- UI widgets for resource information retrieval
 
 Coming soon:
 
@@ -25,7 +27,8 @@ Coming soon:
 - Configuration of audio through the UI
 - UI components for easing shader development
   - e.g. customized calculators, uniform variable views, CPU shader debugging
-- Fix or replace camera
+- Improve camera
 - Better composite rendering support
 - Implementation of compute shaders for vertex generation/manipulation
 - Implementation of resource group compute shaders
+- Fully functional project/scene management console
