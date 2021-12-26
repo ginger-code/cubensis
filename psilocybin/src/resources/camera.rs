@@ -13,7 +13,7 @@ pub struct CameraResource {
     binding_group: u32,
     binding_offset: u32,
     camera_buffer: wgpu::Buffer,
-    arcball_camera: arcball::ArcballCamera,
+    pub arcball_camera: arcball::ArcballCamera,
     previous_mouse_position: Option<winit::dpi::PhysicalPosition<f64>>,
     mouse_button_pressed: [bool; 2],
     requires_update: bool,

@@ -1,4 +1,5 @@
 use crate::gui::widgets::audio_widget::AudioWidget;
+use crate::gui::widgets::camera_widget::CameraWidget;
 use crate::gui::{CubensisGuiComponent, CubensisGuiWidget};
 use crate::ResourceCollection;
 use egui::CtxRef;
@@ -9,12 +10,14 @@ use winit::event::Event;
 
 pub struct MainMenuAndWidgets {
     pub(crate) audio_widget_enabled: bool,
+    pub(crate) camera_widget_enabled: bool,
 }
 
 impl MainMenuAndWidgets {
     pub fn new() -> Self {
         Self {
             audio_widget_enabled: false,
+            camera_widget_enabled: false,
         }
     }
 
@@ -23,11 +26,15 @@ impl MainMenuAndWidgets {
             egui::menu::menu(ui, "Widgets", |ui| {
                 let widget = self as &mut dyn CubensisGuiWidget<AudioWidget>;
                 widget.draw_menu_option(ui);
+                let widget = self as &mut dyn CubensisGuiWidget<CameraWidget>;
+                widget.draw_menu_option(ui);
             });
         });
     }
     fn draw_widgets(&self, context: &egui::CtxRef, resource_collection: &ResourceCollection) {
         let widget = self as &dyn CubensisGuiWidget<AudioWidget>;
+        widget.draw(context, resource_collection);
+        let widget = self as &dyn CubensisGuiWidget<CameraWidget>;
         widget.draw(context, resource_collection);
     }
 }

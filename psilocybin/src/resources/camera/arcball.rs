@@ -8,15 +8,15 @@ use cgmath::{Matrix4, Quaternion, Vector2, Vector3, Vector4};
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ArcballCamera {
-    translation: Matrix4<f32>,
-    center_translation: Matrix4<f32>,
-    rotation: Quaternion<f32>,
-    camera: Matrix4<f32>,
-    inv_camera: Matrix4<f32>,
-    zoom_speed: f32,
-    inv_screen: [f32; 2],
-    perspective_projection: Matrix4<f32>,
-    projection: Matrix4<f32>,
+    pub translation: Matrix4<f32>,
+    pub center_translation: Matrix4<f32>,
+    pub rotation: Quaternion<f32>,
+    pub camera: Matrix4<f32>,
+    pub inv_camera: Matrix4<f32>,
+    pub zoom_speed: f32,
+    pub inv_screen: [f32; 2],
+    pub perspective_projection: Matrix4<f32>,
+    pub projection: Matrix4<f32>,
 }
 
 impl ArcballCamera {
