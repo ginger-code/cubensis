@@ -6,6 +6,7 @@ use crate::resources::CubensisResourceCollection;
 use hyphae::scene::geometry::GeometrySource;
 use hyphae::scene::primitives::PrimitiveType::Quad;
 use std::rc::Rc;
+use hyphae::configuration::library::Library;
 use textures::PresentTexture;
 
 mod depth_texture;
@@ -148,6 +149,7 @@ impl<const HISTORY_DEPTH: usize> PresentationPass<HISTORY_DEPTH> {
         mut encoder: wgpu::CommandEncoder,
         gui_host: &mut GuiHost,
         gui: &mut Gui,
+        library: &Library,
         resource_collection: &ResourceCollection,
     ) -> Result<(), wgpu::SurfaceError> {
         log::trace!("Presenting image");
@@ -182,7 +184,7 @@ impl<const HISTORY_DEPTH: usize> PresentationPass<HISTORY_DEPTH> {
             );
             render_pass.draw_indexed(0..self.buffers.index_count, 0, 0..1);
         }
-        encoder.render_gui(gui_host, gui, resource_collection, &surface_view);
+        encoder.render_gui(gui_host, gui, library,resource_collection, &surface_view);
         self.graphics
             .queue
             .submit(std::iter::once(encoder.finish()));

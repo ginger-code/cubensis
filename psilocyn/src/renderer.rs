@@ -32,7 +32,7 @@ pub struct Renderer<
     _start_time: std::time::Instant,
     last_frame_time: std::time::Instant,
     plugins: Plugins,
-    _library: Library,
+    library: Library,
 }
 
 impl<
@@ -56,8 +56,8 @@ impl<
         let resource_collection = ResourceCollection::new(graphics.clone(), configuration.clone());
         let gui_host = GuiHost::new(graphics.clone(), window.clone());
         let presentation_pass = PresentationPass::new(graphics.clone());
-        let _library = configuration.library.build_library();
-        let scene = _library.current_scene();
+        let library = configuration.library.build_library();
+        let scene = library.current_scene();
         let history_bind_group_layout = presentation_pass.get_bind_group_layout();
         let meshes = scene.create_meshes(
             graphics.clone(),
@@ -76,11 +76,11 @@ impl<
             presentation_pass,
             meshes,
             gui,
-            _scene: scene,
+            _scene: scene.clone(),
             _start_time: start_time,
             last_frame_time,
             plugins,
-            _library,
+            library,
         }
     }
 
@@ -272,6 +272,7 @@ impl<
             &mut self.presentation_pass,
             &mut self.gui_host,
             &mut self.gui,
+            &self.library,
             &self.resource_collection,
         )?;
         Ok(())

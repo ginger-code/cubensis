@@ -2,6 +2,7 @@ use crate::gui::CubensisGuiComponent;
 use crate::ResourceCollection;
 use egui::CtxRef;
 use epi::Frame;
+use hyphae::configuration::library::Library;
 use hyphae::events::CubensisEvent;
 use std::time::Duration;
 use winit::event::Event;
@@ -17,12 +18,38 @@ impl LibraryPanel {
 impl CubensisGuiComponent for LibraryPanel {
     fn update(&mut self, _: Duration) {}
 
-    fn draw(&mut self, context: &CtxRef, _: &Frame, _resource_collection: &ResourceCollection) {
+    fn draw(
+        &mut self,
+        context: &CtxRef,
+        _: &Frame,
+        library: &Library,
+        _resource_collection: &ResourceCollection,
+    ) {
         if !self.is_enabled {
             return;
         }
-        egui::panel::SidePanel::new(egui::panel::Side::Left, "Library Panel")
-            .show(context, |ui| {});
+        egui::panel::SidePanel::new(egui::panel::Side::Left, "Library Panel").show(context, |ui| {
+            ui.vertical_centered(|ui| {
+                ui.heading("Scenes");
+            });
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                for scene in library.scenes() {
+                    let is_current = scene.0.eq(&library.current_scene().name);
+
+                    ui.with_layout(
+                        egui::Layout::top_down(egui::Align::LEFT).with_cross_justify(true),
+                        |ui| {
+                            if is_current {
+                                ui.add_enabled(false, egui::widgets::Button::new(scene.0));
+                            } else {
+                                let _button =
+                                    ui.add_enabled(true, egui::widgets::Button::new(scene.0));
+                            }
+                        },
+                    );
+                }
+            });
+        });
     }
 
     fn handle_event(&mut self, event: &Event<CubensisEvent>) {

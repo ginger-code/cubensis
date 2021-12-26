@@ -2,6 +2,7 @@ use crate::gui::components::library::LibraryPanel;
 use crate::resources::ResourceCollection;
 use components::menu::MainMenuAndWidgets;
 use components::status::StatusBar;
+use hyphae::configuration::library::Library;
 use hyphae::events::CubensisEvent;
 use psilocyn::gui::CubensisGuiApp;
 use winit::event::Event;
@@ -42,6 +43,7 @@ impl CubensisGuiApp<ResourceCollection> for GuiApp {
         &mut self,
         context: &egui::CtxRef,
         frame: &epi::Frame,
+        library: &Library,
         resource_collection: &ResourceCollection,
     ) {
         log::trace!("Drawing GUI app");
@@ -49,7 +51,7 @@ impl CubensisGuiApp<ResourceCollection> for GuiApp {
             return;
         }
         for component in &mut self.components {
-            component.draw(context, frame, resource_collection);
+            component.draw(context, frame, library, resource_collection);
         }
     }
 
@@ -93,6 +95,7 @@ trait CubensisGuiComponent {
         &mut self,
         context: &egui::CtxRef,
         frame: &epi::Frame,
+        library: &Library,
         resource_collection: &ResourceCollection,
     );
     fn handle_event(&mut self, event: &winit::event::Event<CubensisEvent>);

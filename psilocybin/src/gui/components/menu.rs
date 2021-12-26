@@ -4,6 +4,7 @@ use crate::gui::{CubensisGuiComponent, CubensisGuiWidget};
 use crate::ResourceCollection;
 use egui::CtxRef;
 use epi::Frame;
+use hyphae::configuration::library::Library;
 use hyphae::events::CubensisEvent;
 use std::time::Duration;
 use winit::event::Event;
@@ -42,7 +43,13 @@ impl MainMenuAndWidgets {
 impl CubensisGuiComponent for MainMenuAndWidgets {
     fn update(&mut self, _: Duration) {}
 
-    fn draw(&mut self, context: &CtxRef, _: &Frame, resource_collection: &ResourceCollection) {
+    fn draw(
+        &mut self,
+        context: &CtxRef,
+        _: &Frame,
+        _: &Library,
+        resource_collection: &ResourceCollection,
+    ) {
         egui::containers::TopBottomPanel::new(egui::panel::TopBottomSide::Top, "Main Menu").show(
             context,
             |ui| {
