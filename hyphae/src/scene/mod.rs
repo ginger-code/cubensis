@@ -1,3 +1,6 @@
+use crate::scene::assets::SceneTextures;
+
+pub mod assets;
 pub mod geometry;
 pub mod primitives;
 pub mod shaders;
@@ -6,6 +9,7 @@ pub mod shaders;
 pub struct Scene {
     pub name: String,
     pub meshes: Vec<crate::scene::geometry::MeshDescriptor>,
+    pub textures: SceneTextures,
 }
 
 impl Scene {
@@ -22,6 +26,7 @@ impl Default for Scene {
         Self {
             name: "Default Scene".to_string(),
             meshes: vec![crate::scene::geometry::MeshDescriptor::default()],
+            textures: SceneTextures::default(),
         }
     }
 }
