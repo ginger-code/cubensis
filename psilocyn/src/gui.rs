@@ -1,5 +1,6 @@
 use crate::device::GraphicsDevice;
 use crate::resources::CubensisResourceCollection;
+use hyphae::configuration::library::Library;
 use hyphae::events::CubensisEvent;
 use std::rc::Rc;
 
@@ -79,7 +80,8 @@ where
     fn render_gui(
         &mut self,
         gui_host: &mut GuiHost,
-        app: &Gui,
+        app: &mut Gui,
+        library: &Library,
         resource_collection: &ResourceCollection,
         render_target: &wgpu::TextureView,
     );
@@ -93,7 +95,8 @@ where
     fn render_gui(
         &mut self,
         gui_host: &mut GuiHost,
-        app: &Gui,
+        app: &mut Gui,
+        library: &Library,
         resource_collection: &ResourceCollection,
         render_target: &wgpu::TextureView,
     ) {
@@ -116,6 +119,7 @@ where
         app.draw(
             &gui_host.platform.context(),
             &mut frame,
+            library,
             resource_collection,
         );
         let (_, paint_commands) = gui_host.platform.end_frame(Some(&gui_host.window));
@@ -156,9 +160,10 @@ where
     fn new() -> Self;
     fn update(&mut self, time_delta: std::time::Duration);
     fn draw(
-        &self,
+        &mut self,
         context: &egui::CtxRef,
         frame: &epi::Frame,
+        library: &Library,
         resource_collection: &ResourceCollection,
     );
     fn handle_event(&mut self, event: &winit::event::Event<CubensisEvent>);

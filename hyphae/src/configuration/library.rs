@@ -25,7 +25,7 @@ impl LibraryConfiguration {
         Library::new(self.default_scene_name.clone())
     }
 
-    fn load_scenes() -> HashMap<String, Vec<Scene>> {
+    fn load_scenes() -> HashMap<String, Scene> {
         let library_directory = Self::scene_library_path();
         walkdir::WalkDir::new(library_directory)
             .follow_links(true)
@@ -41,6 +41,9 @@ impl LibraryConfiguration {
             .filter_map(|entry| Scene::load_from_disk(&entry.into_path()).ok())
             .map(|scene| (scene.name.clone(), scene))
             .into_group_map()
+            .iter()
+            .map(|(s, m)| (s.to_owned(), m[0].to_owned()))
+            .collect()
     }
 }
 
@@ -54,7 +57,7 @@ impl Default for LibraryConfiguration {
 
 pub struct Library {
     current_scene_name: String,
-    scenes: HashMap<String, Vec<Scene>>,
+    scenes: HashMap<String, Scene>,
 }
 
 impl Library {
@@ -73,8 +76,12 @@ impl Library {
             scenes,
         }
     }
-    pub fn current_scene(&self) -> crate::scene::Scene {
-        log::debug!("Retrieving current scene from configuration");
-        self.scenes[&self.current_scene_name][0].clone()
+    pub fn current_scene(&self) -> &crate::scene::Scene {
+        log::trace!("Retrieving current scene from configuration");
+        &self.scenes[&self.current_scene_name]
+    }
+
+    pub fn scenes(&self) -> &HashMap<String, Scene> {
+        &self.scenes
     }
 }

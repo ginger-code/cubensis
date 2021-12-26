@@ -3,6 +3,7 @@ use cpal::traits::{DeviceTrait, HostTrait};
 use itertools::Itertools;
 
 pub mod wave_stream;
+pub mod stream_info;
 
 #[derive(Clone, Debug)]
 pub enum AudioStreamSource {

@@ -1,5 +1,6 @@
 use crate::resources::audio::AudioResource;
 use crate::resources::camera::CameraResource;
+use crate::resources::textures::TextureResource;
 use crate::resources::time::TimeResource;
 use hyphae::configuration::Configuration;
 use hyphae::events::CubensisEvent;
@@ -9,6 +10,7 @@ use std::rc::Rc;
 
 pub mod audio;
 pub mod camera;
+pub mod textures;
 pub mod time;
 
 pub struct ResourceCollection {
@@ -18,6 +20,7 @@ pub struct ResourceCollection {
     pub time: TimeResource,
     pub audio: AudioResource,
     pub camera: CameraResource,
+    pub textures: TextureResource,
 }
 
 impl CubensisResourceCollection for ResourceCollection {
@@ -28,14 +31,21 @@ impl CubensisResourceCollection for ResourceCollection {
 
         let audio = AudioResource::new(
             graphics.clone(),
-            configuration,
+            configuration.clone(),
             0,
             camera.next_binding_offset_in_group(),
+        );
+        let textures = TextureResource::new(
+            graphics.clone(),
+            configuration.clone(),
+            0,
+            audio.next_binding_offset_in_group(),
         );
         let bind_group_layout_entries: Vec<wgpu::BindGroupLayoutEntry> = vec![
             time.get_bind_group_layout_entries(),
             camera.get_bind_group_layout_entries(),
             audio.get_bind_group_layout_entries(),
+            textures.get_bind_group_layout_entries(),
         ]
         .iter()
         .flat_map(|e| e.iter())
@@ -47,6 +57,7 @@ impl CubensisResourceCollection for ResourceCollection {
             time.get_bind_group_entries(),
             camera.get_bind_group_entries(),
             audio.get_bind_group_entries(),
+            textures.get_bind_group_entries(),
         ]
         .iter()
         .flat_map(|e| e.iter())
@@ -61,6 +72,7 @@ impl CubensisResourceCollection for ResourceCollection {
             time,
             audio,
             camera,
+            textures,
         }
     }
 
@@ -74,6 +86,7 @@ impl CubensisResourceCollection for ResourceCollection {
                 self.time.get_bind_group_layout_entries(),
                 self.camera.get_bind_group_layout_entries(),
                 self.audio.get_bind_group_layout_entries(),
+                self.textures.get_bind_group_layout_entries(),
             ]
             .iter()
             .flat_map(|e| e.iter())
@@ -85,6 +98,7 @@ impl CubensisResourceCollection for ResourceCollection {
                 self.time.get_bind_group_entries(),
                 self.camera.get_bind_group_entries(),
                 self.audio.get_bind_group_entries(),
+                self.textures.get_bind_group_entries(),
             ]
             .iter()
             .flat_map(|e| e.iter())
@@ -116,13 +130,10 @@ impl CubensisResourceCollection for ResourceCollection {
 
     fn handle_event(&mut self, event: &winit::event::Event<'_, CubensisEvent>) {
         log::trace!("Handling event in resource collection");
-        match self.audio.handle_or_capture_event(event) || self.time.handle_or_capture_event(event)
-        {
-            true => {
-                log::debug!("Resource collection consumed an event: {:?}", event)
-            }
-            false => {}
-        }
+        self.audio.handle_or_capture_event(event);
+        self.time.handle_or_capture_event(event);
+        self.camera.handle_or_capture_event(event);
+        self.textures.handle_or_capture_event(event);
     }
 }
 

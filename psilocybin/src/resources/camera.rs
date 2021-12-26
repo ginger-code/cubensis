@@ -13,7 +13,7 @@ pub struct CameraResource {
     binding_group: u32,
     binding_offset: u32,
     camera_buffer: wgpu::Buffer,
-    arcball_camera: arcball::ArcballCamera,
+    pub arcball_camera: arcball::ArcballCamera,
     previous_mouse_position: Option<winit::dpi::PhysicalPosition<f64>>,
     mouse_button_pressed: [bool; 2],
     requires_update: bool,
@@ -24,8 +24,12 @@ impl CameraResource {
         binding_group: u32,
         binding_offset: u32,
     ) -> Self {
-        let arcball_camera =
-            arcball::ArcballCamera::new(cgmath::vec3(0.0, 0.0, 0.0), 0.0, [0.0, 0.0]);
+        let size = graphics.get_size();
+        let arcball_camera = arcball::ArcballCamera::new(
+            cgmath::vec3(0.0, 0.0, 0.0),
+            1.0,
+            [size.width as f32, size.height as f32],
+        );
         let camera_buffer = graphics
             .device
             .create_buffer_init(&wgpu::util::BufferInitDescriptor {
@@ -51,6 +55,14 @@ impl CameraResource {
 
 impl CubensisResource for CameraResource {
     fn update(&mut self, _time_delta: Duration) -> bool {
+        if self.requires_update {
+            self.graphics.queue.write_buffer(
+                &self.camera_buffer,
+                0,
+                bytemuck::cast_slice(&[self.arcball_camera]),
+            );
+            self.requires_update = false;
+        }
         false
     }
 

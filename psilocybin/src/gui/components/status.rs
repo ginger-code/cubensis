@@ -2,6 +2,7 @@ use crate::gui::CubensisGuiComponent;
 use crate::ResourceCollection;
 use egui::CtxRef;
 use epi::Frame;
+use hyphae::configuration::library::Library;
 use hyphae::events::CubensisEvent;
 use std::time::Duration;
 use winit::event::Event;
@@ -23,7 +24,13 @@ impl CubensisGuiComponent for StatusBar {
         self.last_frame_time = time_delta;
     }
 
-    fn draw(&self, context: &CtxRef, _: &Frame, resource_collection: &ResourceCollection) {
+    fn draw(
+        &mut self,
+        context: &CtxRef,
+        _: &Frame,
+        _: &Library,
+        resource_collection: &ResourceCollection,
+    ) {
         egui::containers::TopBottomPanel::new(egui::panel::TopBottomSide::Bottom, "Status Bar")
             .show(context, |ui| {
                 let frame_number = resource_collection.time.get_frame_count();

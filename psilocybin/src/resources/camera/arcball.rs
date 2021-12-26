@@ -8,15 +8,15 @@ use cgmath::{Matrix4, Quaternion, Vector2, Vector3, Vector4};
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ArcballCamera {
-    translation: Matrix4<f32>,
-    center_translation: Matrix4<f32>,
-    rotation: Quaternion<f32>,
-    camera: Matrix4<f32>,
-    inv_camera: Matrix4<f32>,
-    zoom_speed: f32,
-    inv_screen: [f32; 2],
-    perspective_projection: Matrix4<f32>,
-    projection: Matrix4<f32>,
+    pub translation: Matrix4<f32>,
+    pub center_translation: Matrix4<f32>,
+    pub rotation: Quaternion<f32>,
+    pub camera: Matrix4<f32>,
+    pub inv_camera: Matrix4<f32>,
+    pub zoom_speed: f32,
+    pub inv_screen: [f32; 2],
+    pub perspective_projection: Matrix4<f32>,
+    pub projection: Matrix4<f32>,
 }
 
 impl ArcballCamera {
@@ -24,7 +24,7 @@ impl ArcballCamera {
     /// `screen` should be `[screen_width, screen_height]`.
     pub fn new(center: Vector3<f32>, zoom_speed: f32, screen: [f32; 2]) -> ArcballCamera {
         let perspective_projection =
-            cgmath::perspective(cgmath::Deg(65.0), screen[0] / screen[1], 1.0, 200.0);
+            cgmath::perspective(cgmath::Deg(80.0), screen[0] / screen[1], 0.01, 200.0);
         let mut cam = ArcballCamera {
             translation: Matrix4::from_translation(Vector3::new(
                 f32::zero(),
@@ -45,7 +45,7 @@ impl ArcballCamera {
     }
     /// Get the view matrix computed by the camera.
     pub fn get_mat4(&self) -> Matrix4<f32> {
-        self.camera
+        OPENGL_TO_WGPU_MATRIX * self.camera
     }
     /// Get the inverse view matrix
     pub fn _get_inv_camera(&self) -> Matrix4<f32> {
@@ -136,3 +136,10 @@ unsafe impl bytemuck::Zeroable for ArcballCamera {}
 unsafe impl bytemuck::Pod for ArcballCamera {}
 
 // pub struct ArcballCameraRaw
+#[rustfmt::skip]
+pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 0.5, 0.0,
+    0.0, 0.0, 0.5, 1.0,
+);

@@ -32,7 +32,7 @@ pub struct Renderer<
     _start_time: std::time::Instant,
     last_frame_time: std::time::Instant,
     plugins: Plugins,
-    _library: Library,
+    library: Library,
 }
 
 impl<
@@ -56,8 +56,8 @@ impl<
         let resource_collection = ResourceCollection::new(graphics.clone(), configuration.clone());
         let gui_host = GuiHost::new(graphics.clone(), window.clone());
         let presentation_pass = PresentationPass::new(graphics.clone());
-        let _library = configuration.library.build_library();
-        let scene = _library.current_scene();
+        let library = configuration.library.build_library();
+        let scene = library.current_scene();
         let history_bind_group_layout = presentation_pass.get_bind_group_layout();
         let meshes = scene.create_meshes(
             graphics.clone(),
@@ -76,11 +76,11 @@ impl<
             presentation_pass,
             meshes,
             gui,
-            _scene: scene,
+            _scene: scene.clone(),
             _start_time: start_time,
             last_frame_time,
             plugins,
-            _library,
+            library,
         }
     }
 
@@ -88,10 +88,15 @@ impl<
         log::debug!("Running renderer");
         let event_loop: winit::event_loop::EventLoop<CubensisEvent> =
             winit::event_loop::EventLoop::with_user_event();
+        log::debug!("Creating window");
         let window = Rc::new(event_loop.create_window());
+        log::debug!("Creating event proxy");
         let proxy = event_loop.create_proxy();
+        log::debug!("Initializing renderer");
         let mut renderer = Self::new(window.clone(), proxy.clone(), configuration.clone());
+        log::debug!("Beginning plugins");
         renderer.plugins.start_all();
+        log::debug!("Entering event loop");
         event_loop.run(move |event, _window_target, control_flow| {
             log::trace!("Rendering frame");
             renderer.handle_event(&event, control_flow).unwrap();
@@ -266,7 +271,8 @@ impl<
         encoder.present(
             &mut self.presentation_pass,
             &mut self.gui_host,
-            &self.gui,
+            &mut self.gui,
+            &self.library,
             &self.resource_collection,
         )?;
         Ok(())

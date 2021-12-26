@@ -3,6 +3,7 @@ use hyphae::events::CubensisEvent;
 use psilocyn::device::GraphicsDevice;
 use psilocyn::resources::CubensisResource;
 use std::time::Duration;
+use substrate::stream_info::AudioStreamInfo;
 use substrate::wave_stream::WaveStream;
 use substrate::AudioStreamSource;
 
@@ -18,6 +19,7 @@ pub struct AudioResource {
     wave_view: wgpu::TextureView,
     spectrum_view: wgpu::TextureView,
     sampler: wgpu::Sampler,
+    audio_stream_info: AudioStreamInfo,
 }
 
 impl AudioResource {
@@ -47,6 +49,7 @@ impl AudioResource {
             mipmap_filter: wgpu::FilterMode::Nearest,
             ..wgpu::SamplerDescriptor::default()
         });
+        let audio_stream_info = wave_stream.get_stream_info();
         Self {
             graphics,
             wave_stream,
@@ -59,6 +62,7 @@ impl AudioResource {
             sampler,
             binding_group,
             binding_offset,
+            audio_stream_info,
         }
     }
     fn create_1d_texture(
@@ -81,6 +85,9 @@ impl AudioResource {
             usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
         };
         graphics.device.create_texture(&descriptor)
+    }
+    pub fn get_stream_info(&self) -> &AudioStreamInfo {
+        &self.audio_stream_info
     }
 }
 
