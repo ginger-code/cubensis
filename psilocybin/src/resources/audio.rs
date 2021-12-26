@@ -44,9 +44,6 @@ impl AudioResource {
             address_mode_u: wgpu::AddressMode::ClampToEdge,
             address_mode_v: wgpu::AddressMode::ClampToEdge,
             address_mode_w: wgpu::AddressMode::Repeat,
-            mag_filter: wgpu::FilterMode::Linear,
-            min_filter: wgpu::FilterMode::Nearest,
-            mipmap_filter: wgpu::FilterMode::Nearest,
             ..wgpu::SamplerDescriptor::default()
         });
         let audio_stream_info = wave_stream.get_stream_info();
@@ -180,7 +177,7 @@ impl CubensisResource for AudioResource {
                 visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
                 ty: wgpu::BindingType::Sampler {
                     comparison: false,
-                    filtering: true,
+                    filtering: false,
                 },
                 count: None,
             },

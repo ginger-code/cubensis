@@ -3,10 +3,10 @@ use crate::gui::{CubensisGuiApp, CubensisGuiRenderer, GuiHost};
 use crate::mesh::buffers::{MeshBuffers, Vertex};
 use crate::presentation::depth_texture::DepthTexture;
 use crate::resources::CubensisResourceCollection;
+use hyphae::configuration::library::Library;
 use hyphae::scene::geometry::GeometrySource;
 use hyphae::scene::primitives::PrimitiveType::Quad;
 use std::rc::Rc;
-use hyphae::configuration::library::Library;
 use textures::PresentTexture;
 
 mod depth_texture;
@@ -89,7 +89,7 @@ impl<const HISTORY_DEPTH: usize> PresentationPass<HISTORY_DEPTH> {
                     visibility: wgpu::ShaderStages::VERTEX_FRAGMENT,
                     ty: wgpu::BindingType::Sampler {
                         comparison: false,
-                        filtering: true,
+                        filtering: false,
                     },
                     count: None,
                 },
@@ -184,7 +184,7 @@ impl<const HISTORY_DEPTH: usize> PresentationPass<HISTORY_DEPTH> {
             );
             render_pass.draw_indexed(0..self.buffers.index_count, 0, 0..1);
         }
-        encoder.render_gui(gui_host, gui, library,resource_collection, &surface_view);
+        encoder.render_gui(gui_host, gui, library, resource_collection, &surface_view);
         self.graphics
             .queue
             .submit(std::iter::once(encoder.finish()));
