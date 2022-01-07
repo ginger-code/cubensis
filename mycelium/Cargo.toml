@@ -1,0 +1,15 @@
+[package]
+name = "mycelium"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+name = "mycelium"
+
+[dependencies]
+wgpu = { version = "0.12.0", features = ["serde", "trace", "replay"] }
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.72"
+anyhow = "1.0.52"
+log = "0.4"
